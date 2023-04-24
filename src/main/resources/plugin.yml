@@ -1,0 +1,3 @@
+name: Juice
+version: 1.0-SNAPSHOT
+main: net.nicholasmoreland.juice.Juice
