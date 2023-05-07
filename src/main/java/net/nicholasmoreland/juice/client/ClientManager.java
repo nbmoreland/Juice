@@ -1,5 +1,6 @@
 package net.nicholasmoreland.juice.client;
 
+import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,19 +9,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.server.TabCompleteEvent;
 
-import java.util.ArrayList;
+import net.nicholasmoreland.juice.database.DatabaseManager;
+
 import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 
 public class ClientManager implements Listener {
 
-    private final HashMap<String, Client> clientMap = new HashMap<>();
+    private final DatabaseManager dbm;
+    private final HashMap<String, Client> clients;
 
-    public HashMap<String, Client> getClientMap() {
-        return clientMap;
+    public ClientManager(DatabaseManager dbm) {
+        this.dbm = dbm;
+        this.clients = new HashMap<>();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -28,25 +29,31 @@ public class ClientManager implements Listener {
         Player player = event.getPlayer();
         String name = player.getName();
         Client client = new Client(name);
+        Document document = dbm.findUser(name);
 
-        if (name.equals("FaultyRam")) {
-            client.setRank(ClientRank.DEV);
+        if (document == null) {
+            dbm.addUser(player.getUniqueId().toString(), name, client.getRank().getName());
+        } else {
+            client.setRank(ClientRank.valueOf(document.get("rank").toString().toUpperCase()));
+            client.setAuth(true);
+            client.setEmail("nmoreland18@outlook.com");
         }
-        clientMap.put(name, client);
-        player.setPlayerListName(client.getRank().toString() + " " + player.getName());
+
+        clients.put(name, client);
+        player.setPlayerListName(client.getRank().toString() + " " + name);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        clientMap.remove(player.getName());
+        clients.remove(player.getName());
     }
 
     @EventHandler(priority = EventPriority.LOW)
     private void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        ClientRank rank = clientMap.get(player.getName()).getRank();
+        ClientRank rank = clients.get(player.getName()).getRank();
 
         event.setFormat(rank.toString() + " " + player.getName() + ": " + ChatColor.WHITE + event.getMessage());
     }
