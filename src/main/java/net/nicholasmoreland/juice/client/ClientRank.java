@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 
 public enum ClientRank {
 
-    DEV("Developer", ChatColor.LIGHT_PURPLE),
+    DEV("DEV", ChatColor.LIGHT_PURPLE),
     GUEST("Guest", ChatColor.GRAY);
 
     private final String name;
@@ -13,6 +13,10 @@ public enum ClientRank {
     ClientRank(String name, ChatColor chatColor) {
         this.name = name;
         this.chatColor = chatColor;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public ChatColor geChatColor() {
