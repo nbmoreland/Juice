@@ -32,7 +32,8 @@ public class ClientManager implements Listener {
         Document document = dbm.findUser(name);
 
         if (document == null) {
-            dbm.addUser(player.getUniqueId().toString(), name, client.getRank().getName());
+            dbm.addUser(player.getUniqueId().toString(), name, client.getRank().getName(), client.getAuth(),
+                    client.getEmail());
         } else {
             client.setRank(ClientRank.valueOf(document.get("rank").toString().toUpperCase()));
             client.setAuth(true);

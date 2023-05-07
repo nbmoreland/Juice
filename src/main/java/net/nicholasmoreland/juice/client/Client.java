@@ -41,7 +41,7 @@ public class Client {
         this.auth = option;
     }
 
-    public boolean getAuth(boolean option) {
+    public boolean getAuth() {
         return auth;
     }
 

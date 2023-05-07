@@ -32,15 +32,17 @@ public class DatabaseManager {
         Bukkit.getConsoleSender().sendMessage("Connected " + database);
     }
 
-    public void addUser(String uuid, String username, String rank) {
+    public void addUser(String uuid, String username, String rank, boolean auth, String email) {
         Document newUser = new Document("uuid", uuid)
-                .append("username", username)
-                .append("rank", rank);
+                .append("name", username)
+                .append("rank", rank)
+                .append("auth", auth)
+                .append("email", email);
         collection.insertOne(newUser);
     }
 
     public Document findUser(String username) {
-        Document query = new Document("username", username);
+        Document query = new Document("name", username);
         return collection.find(query).first();
     }
 
